@@ -11,7 +11,7 @@ const router = express_1.default.Router();
 // Configure multer to handle file uploads in memory
 const upload = (0, multer_1.default)({
     storage: multer_1.default.memoryStorage(), // Store files in memory
-    limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+    limits: { fileSize: 80 * 1024 * 1024 }, // Limit file size to 80MB
     fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Only image files are allowed!"));
