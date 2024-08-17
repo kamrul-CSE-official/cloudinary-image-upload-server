@@ -4,14 +4,15 @@
     {
       "src": "dist/index.js",
       "use": "@vercel/node",
-      "config": { "output": "dist/index.js" }
+      "config": {
+        "buildCommand": "npm install --legacy-peer-deps && npm run build",
+        "output": "dist/index.js"
+      }
     }
   ],
-
   "routes": [
     {
       "src": "/(.*)",
-
       "dest": "dist/index.js"
     }
   ]

@@ -8,12 +8,11 @@ const multer_1 = __importDefault(require("multer"));
 const authenticate_1 = __importDefault(require("../middleware/authenticate"));
 const fileUploader_controllers_1 = __importDefault(require("../controllers/fileUploader.controllers"));
 const router = express_1.default.Router();
-// Configure multer to store files in memory
+// Configure multer to handle file uploads in memory
 const upload = (0, multer_1.default)({
     storage: multer_1.default.memoryStorage(), // Store files in memory
     limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
     fileFilter: (req, file, cb) => {
-        // Add custom file filtering logic if needed
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Only image files are allowed!"));
         }
@@ -21,9 +20,7 @@ const upload = (0, multer_1.default)({
     },
 });
 // File upload route with authentication and single file handling
-router.post("/", authenticate_1.default, // Middleware to authenticate the user
-upload.single("file"), // Handle single file upload with field name 'file'
-(req, res, next) => {
+router.post("/", authenticate_1.default, upload.single("file"), (req, res, next) => {
     fileUploader_controllers_1.default.fileUploadController(req, res, next).catch(next);
 });
 exports.default = router;
