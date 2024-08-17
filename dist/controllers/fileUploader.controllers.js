@@ -13,16 +13,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fileUploader_service_1 = __importDefault(require("../services/fileUploader.service"));
-const fileUploadController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const fileUploadController = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
+            return res.status(400).json({
+                status: "fail",
+                message: "No file uploaded",
+            });
         }
         const fileUrl = yield fileUploader_service_1.default.uploadFileToCloudinary(req.file.path);
-        return res.status(200).json({ fileUrl });
+        return res.status(200).json({
+            status: "success",
+            fileUrl,
+        });
     }
     catch (error) {
-        return res.status(500).json({ error: error.message });
+        console.error(error);
+        return res.status(500).json({
+            status: "fail",
+            message: error.message || "Internal Server Error",
+        });
     }
 });
 const fileUploaderController = {

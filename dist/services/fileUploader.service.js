@@ -23,10 +23,12 @@ cloudinary_1.v2.config({
 });
 const uploadFileToCloudinary = (filePath) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("Hit service-1");
         const result = yield cloudinary_1.v2.uploader.upload(filePath, {
             resource_type: "auto",
         });
         fs_1.default.unlinkSync(filePath); // Remove file after upload
+        console.log("Hit service-2");
         return result.secure_url;
     }
     catch (error) {

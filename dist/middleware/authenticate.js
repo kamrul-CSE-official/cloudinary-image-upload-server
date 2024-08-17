@@ -7,7 +7,7 @@ const envConfig_1 = __importDefault(require("../configs/envConfig"));
 const authenticate = (req, res, next) => {
     const apiKey = req.headers["x-api-key"];
     const validApiKey = envConfig_1.default.apiKey;
-    if (apiKey && apiKey === validApiKey) {
+    if (apiKey && validApiKey && apiKey === validApiKey) {
         next();
     }
     else {

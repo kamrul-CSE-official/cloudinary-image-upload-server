@@ -18,8 +18,17 @@ app.use((0, cookie_parser_1.default)());
 app.get("/", (0, limiter_1.default)(5), (req, res) => {
     res.send("Server is running...🏃");
 });
+// Handle favicon.ico request to avoid errors
+app.get("/favicon.ico", (req, res) => res.status(204));
 // Routes
 app.use("/api/v1/fileuploader", (0, limiter_1.default)(20), fileUploader_routes_1.default);
+app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+        status: "fail",
+        message: error.message || "Internal Server Error",
+    });
+});
 // 404 Error handler for undefined routes
 app.use((req, res, next) => {
     const err = new Error("Requested URL was not found!");
