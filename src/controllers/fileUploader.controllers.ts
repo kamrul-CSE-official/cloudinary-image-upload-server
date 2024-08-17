@@ -14,8 +14,13 @@ const fileUploadController = async (
       });
     }
 
+    // Convert file buffer to a readable stream
+    const fileBuffer = req.file.buffer;
+    const fileMimeType = req.file.mimetype;
+
     const fileUrl = await fileUploaderServices.uploadFileToCloudinary(
-      req.file.path
+      fileBuffer,
+      fileMimeType
     );
 
     return res.status(200).json({

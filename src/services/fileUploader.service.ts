@@ -1,30 +1,33 @@
-import { unlinkSync } from "fs";
-import cloudinary from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import envConfig from "../configs/envConfig";
 
 // Configure Cloudinary
-cloudinary.v2.config({
+cloudinary.config({
   cloud_name: envConfig.cloudinary.cloudName,
   api_key: envConfig.cloudinary.apiKey,
   api_secret: envConfig.cloudinary.apiSecreat,
 });
 
-const uploadFileToCloudinary = async (filePath: string): Promise<string> => {
-  try {
-    // Upload the file to Cloudinary
-    const result = await cloudinary.v2.uploader.upload(filePath, {
-      resource_type: "auto",
-    });
+const uploadFileToCloudinary = (
+  fileBuffer: Buffer,
+  fileMimeType: string
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: "auto", format: fileMimeType.split("/")[1] }, // Automatically determine file format
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        if (result) {
+          return resolve(result.secure_url);
+        }
+        reject(new Error("Upload failed"));
+      }
+    );
 
-    // Delete the local file after successful upload
-    unlinkSync(filePath);
-
-    // Return the secure URL of the uploaded file
-    return result.secure_url;
-  } catch (error) {
-    console.error("Error uploading file to Cloudinary:", error);
-    throw new Error("Failed to upload file to Cloudinary");
-  }
+    stream.end(fileBuffer);
+  });
 };
 
 const fileUploaderServices = {
