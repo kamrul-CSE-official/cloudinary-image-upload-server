@@ -8,10 +8,10 @@ const router = express.Router();
 // Configure multer to handle file uploads, storing files temporarily in the 'uploads/' folder
 const upload = multer({
   dest: "uploads/",
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+  limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    console.log("Multer");
-    // Add custom file filtering logic if needed
+    console.log("Multer - File Filtering");
+    // Allow only image files
     if (!file.mimetype.startsWith("image/")) {
       return cb(new Error("Only image files are allowed!"));
     }
@@ -24,8 +24,12 @@ router.post(
   "/",
   authenticate, // Middleware to authenticate the user
   upload.single("file"), // Handle single file upload with field name 'file'
-  (req, res, next) => {
-    fileUploaderController.fileUploadController(req, res, next).catch(next);
+  async (req, res, next) => {
+    try {
+      await fileUploaderController.fileUploadController(req, res, next);
+    } catch (error) {
+      next(error); // Pass the error to the error handling middleware
+    }
   }
 );
 
