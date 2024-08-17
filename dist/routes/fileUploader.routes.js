@@ -8,9 +8,9 @@ const multer_1 = __importDefault(require("multer"));
 const authenticate_1 = __importDefault(require("../middleware/authenticate"));
 const fileUploader_controllers_1 = __importDefault(require("../controllers/fileUploader.controllers"));
 const router = express_1.default.Router();
-// Configure multer to handle file uploads, storing files temporarily in the 'uploads/' folder
+// Configure multer to store files in memory
 const upload = (0, multer_1.default)({
-    dest: "uploads/",
+    storage: multer_1.default.memoryStorage(), // Store files in memory
     limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
     fileFilter: (req, file, cb) => {
         // Add custom file filtering logic if needed

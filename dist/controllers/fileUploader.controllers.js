@@ -21,7 +21,10 @@ const fileUploadController = (req, res, next) => __awaiter(void 0, void 0, void 
                 message: "No file uploaded",
             });
         }
-        const fileUrl = yield fileUploader_service_1.default.uploadFileToCloudinary(req.file.path);
+        // Convert file buffer to a readable stream
+        const fileBuffer = req.file.buffer;
+        const fileMimeType = req.file.mimetype;
+        const fileUrl = yield fileUploader_service_1.default.uploadFileToCloudinary(fileBuffer, fileMimeType);
         return res.status(200).json({
             status: "success",
             fileUrl,
