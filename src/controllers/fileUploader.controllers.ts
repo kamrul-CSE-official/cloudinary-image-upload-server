@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import sharp from "sharp";
 import fileUploaderServices from "../services/fileUploader.service";
 
 const fileUploadController = async (
@@ -14,13 +15,19 @@ const fileUploadController = async (
       });
     }
 
-    // Convert file buffer to a readable stream
-    const fileBuffer = req.file.buffer;
-    const fileMimeType = req.file.mimetype;
+    // Resize and compress the image using sharp
+    const resizedImageBuffer = await sharp(req.file.buffer)
+      .resize(800, 800, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true,
+      })
+      .toFormat("jpeg", { quality: 60 })
+      .toBuffer();
 
+    // Upload the processed image to Cloudinary
     const fileUrl = await fileUploaderServices.uploadFileToCloudinary(
-      fileBuffer,
-      fileMimeType
+      resizedImageBuffer,
+      req.file.mimetype
     );
 
     return res.status(200).json({

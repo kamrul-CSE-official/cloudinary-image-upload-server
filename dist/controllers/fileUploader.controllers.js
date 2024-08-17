@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const sharp_1 = __importDefault(require("sharp"));
 const fileUploader_service_1 = __importDefault(require("../services/fileUploader.service"));
 const fileUploadController = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -21,10 +22,16 @@ const fileUploadController = (req, res, next) => __awaiter(void 0, void 0, void 
                 message: "No file uploaded",
             });
         }
-        // Convert file buffer to a readable stream
-        const fileBuffer = req.file.buffer;
-        const fileMimeType = req.file.mimetype;
-        const fileUrl = yield fileUploader_service_1.default.uploadFileToCloudinary(fileBuffer, fileMimeType);
+        // Resize and compress the image using sharp
+        const resizedImageBuffer = yield (0, sharp_1.default)(req.file.buffer)
+            .resize(800, 800, {
+            fit: sharp_1.default.fit.inside,
+            withoutEnlargement: true,
+        })
+            .toFormat("jpeg", { quality: 60 })
+            .toBuffer();
+        // Upload the processed image to Cloudinary
+        const fileUrl = yield fileUploader_service_1.default.uploadFileToCloudinary(resizedImageBuffer, req.file.mimetype);
         return res.status(200).json({
             status: "success",
             fileUrl,
